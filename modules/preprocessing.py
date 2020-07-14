@@ -30,12 +30,14 @@ class EntityRetokenizeComponent:
 class Tokenizer:
 
     def __init__(self):
-        self.stemmer = PorterStemmer()
-        self.nlp = en_core_web_lg.load()
+        # self.stemmer = PorterStemmer()
+        self.nlp = nlp = spacy.load("en_core_web_lg")
+
 
 
     def getListOfWords(self, phrase):
         retokenizer = EntityRetokenizeComponent(self.nlp)
+        
         try:
             self.nlp.add_pipe(retokenizer, name='merge_phrases', last=True)
         except:
@@ -43,8 +45,10 @@ class Tokenizer:
 
         doc = self.nlp(phrase)
 
-        wordlist = [self.stemmer.stem(tok.lower_) for tok in doc if not (tok.is_punct)]  # tok.is_stop or 
-        return [w.replace(' ','') for w in wordlist]
+        # wordlist = [self.stemmer.stem(tok.lower_) for tok in doc if not (tok.is_punct)]  # tok.is_stop or 
+        wordlist = [tok.lower_ for tok in doc if not (tok.is_punct)]
+        wordlist = [w.replace(' ','') for w in wordlist]
+        return [w for w in wordlist if w != '']
 
 
     def cleanText(self, text):
